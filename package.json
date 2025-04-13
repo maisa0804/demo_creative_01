@@ -1,0 +1,27 @@
+{
+  "name": "demo_creative_01",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"nodemon server/index.js\"",
+    "build": "vite build",
+    "start": "node server/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prismicio/client": "^7.17.2",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "prismic-dom": "^2.2.7",
+    "pug": "^3.0.3"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.9",
+    "vite": "^6.2.6"
+  }
+}

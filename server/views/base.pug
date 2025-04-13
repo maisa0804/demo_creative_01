@@ -1,0 +1,11 @@
+doctype html
+html
+  head
+    title Hello
+  body
+    include partials/preloader.pug
+    include partials/navigation.pug
+
+    .content#content(data-template=template)
+      block content
+      
