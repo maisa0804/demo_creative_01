@@ -1,9 +1,12 @@
-import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
-import "dotenv/config";
-import * as prismic from "@prismicio/client";
-import PrismicDOM from "prismic-dom";
+import express from 'express';
+import path from 'path';
+import morgan from 'morgan';
+import bodyParser from 'body-parser';
+import errorHandler from 'error-handler';
+import { fileURLToPath } from 'url';
+import 'dotenv/config';
+import * as prismic from '@prismicio/client';
+import PrismicDOM from 'prismic-dom';
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -17,7 +20,7 @@ const initAPI = (req) => {
 };
 
 const handleLinkResolver = (doc) => {
-  return "/";
+  return '/';
 };
 
 app.use((req, res, next) => {
@@ -30,39 +33,97 @@ app.use((req, res, next) => {
   next();
 });
 
-app.set("view engine", "pug");
-app.set("views", path.join(__dirname, "views"));
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(methodOverrride())
+app.use(errorHandler());
+app.use(express.static(path.join(__dirname, '../public')));
 
-app.get("/", (req, res) => {
-  res.render("pages/home", { title: "My Vite Express App" });
+app.get('/', (req, res) => {
+  res.render('pages/home', { title: 'My Vite Express App' });
 });
-
-app.get("/about", async (req, res) => {
+//　About page
+app.get('/about', async (req, res) => {
   try {
     const client = initAPI(req);
-    const response = await client.getByType("about");
+    const response = await client.getByType('about');
 
     const { results } = response;
-    const [meta, about] = results;
-    console.log(meta);
-
-    res.render("pages/about", {
-      document: response.results[0],
-      title: "My Vite Express App",
+    const { data } = results[0];
+    res.render('pages/about', {
+      document: data,
+      title: 'My Vite Express App',
     });
   } catch (err) {
-    console.error("Prismic error:", err);
-    res.status(500).send("Error fetching Prismic content.");
+    console.error('Prismic error:', err);
+    res.status(500).send('Error fetching Prismic content.');
   }
 });
 
-app.get("/detail/:id", (req, res) => {
-  res.render("pages/detail", { title: "My Vite Express App" });
+//　Detail page
+app.get('/detail/:id', async (req, res) => {
+  try {
+    const client = initAPI(req);
+    // const meta = await client.getSingle("metadata");
+    const product = await client.getByUID('product', req.params.id);
+    if (!product) {
+      return res.status(404).render('pages/404', {
+        title: 'Page Not Found',
+        message: 'The product you are looking for does not exist.',
+      });
+    }
+    console.log(JSON.stringify(product.data.informations, null, 2));
+    res.render('pages/detail', {
+      product,
+    });
+  } catch (err) {
+    if (err.name === 'NotFoundError') {
+      return res.status(404).render('pages/404', {
+        title: 'Page Not Found',
+        message: 'The product you are looking for does not exist.',
+      });
+    }
+
+    console.error('Prismic error:', err);
+    res.status(500).send('Error fetching product detail.');
+  }
 });
-app.get("/collections", (req, res) => {
-  res.render("pages/collections", { title: "My Vite Express App" });
+
+// Collections
+app.get('/collections', async (req, res) => {
+  try {
+    const client = initAPI(req);
+    const collections = await client.getAllByType('collection');
+    const homeData = await client.getAllByType('home');
+    const home = homeData[0];
+    const preloader = await client.getSingle('preloader');
+    if (!collections || !home) {
+      return res.status(404).render('pages/404', {
+        title: 'Page Not Found',
+        message: 'The product you are looking for does not exist.',
+      });
+    }
+
+    res.render('pages/collections', {
+      collections,
+      home,
+      preloader,
+    });
+  } catch (err) {
+    if (err.name === 'NotFoundError') {
+      return res.status(404).render('pages/404', {
+        title: 'Page Not Found',
+        message: 'The product you are looking for does not exist.',
+      });
+    }
+
+    console.error('Prismic error:', err);
+    res.status(500).send('Error fetching product detail.');
+  }
 });
 
 const PORT = process.env.PORT || 3000;

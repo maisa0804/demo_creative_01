@@ -1,4 +1,61 @@
 extends ../base.pug
 
+block vars
+  - var template = 'about'
+
 block content
-  h1.about__title About
+  .about 
+    .about__wrapper 
+      section.about__gallery 
+        .about__gallery__wrapper 
+          each media in document.gallery || []
+            if media.image && media.image.url
+              figure.about__gallery__media 
+                img.about__gallery__media__image(
+                  alt=media.image.alt || '' 
+                  src=media.image.url
+                )
+            else
+              p (画像がありません)
+        each section in document.body
+          if section.slice_type == 'title'
+            h2.about__title= section.primary.text
+          if section.slice_type == 'content'
+            section.about__content
+              .about__content__wrapper
+                p.about__content__label=section.primary.about__content__label
+                .about__content__description!= PrismicDOM.RichText.asHtml(section.primary.description || [])
+                figure.about__content__media
+                  img.about__dontent__media__image(
+                    alt=section.primary.image.alt || '' 
+                    src=section.primaryA.image.url || ''
+                  )
+          else if section && section.slice_type == 'highlight'
+          section.about__highlight
+            .about__highlight__wrapper
+            if section.primary.html
+              p.about__highlight__lable=section.primary.label
+              h3.about__highlight__title=section.primary.title
+
+            each media in section.items
+              if media.image && media.image.url
+                figure.about__content__media
+                  img.about__content__media__image(
+                    alt=media.image.alt || "" 
+                    src=media.image.url
+                  )
+              else
+                p 画像がありません
+          if section.slice_type == 'gallery'
+            section.about__gallery
+            .about__gallery__wrapper 
+              each media in section.items || []
+                if media.image && media.image.url
+                  figure.about__gallery__media 
+                    img.about__gallery__media__image(
+                      alt=media.image.alt || '' 
+                      src=media.image.url
+                    )
+                else
+                  p (画像がありません)
+

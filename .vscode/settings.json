@@ -1,0 +1,6 @@
+{
+  "[pug]": {
+    "editor.defaultFormatter": "ducfilan.pug-formatter",
+    "editor.formatOnSave": true
+  }
+}

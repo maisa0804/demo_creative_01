@@ -1,11 +1,14 @@
 doctype html
 html
   head
-    title Hello
+    block vars
+    meta(charset='UTF-8')
+    base(href='/')
+    meta(name='viewport' content="width=device-width, initial-scale=1.0")
+    title Floema
   body
     include partials/preloader.pug
     include partials/navigation.pug
 
     .content#content(data-template=template)
       block content
-      

@@ -1,4 +1,29 @@
 extends ../base.pug
 
+block vars
+  - var template = 'collections'
+
 block content
-  h1.collections__title Collections
+  .collections 
+    .collections__wrapper 
+      .collection__titles 
+        each collection in collections 
+          .collections__titles__label=`${home.data.collection} ${index == 0 ? 'One' : index == 1 ? 'Two' : index == 2 ? 'Three' : index == 3 ? 'Four' : ''}`
+          .collections__titles__=collection.data.title[0].text
+
+
+      .collections__gallery 
+        .collections__gallery__wrapper 
+        //- each collection in collections
+        //-   each product in collection.data.products
+        //-     a.collections__gallery__link 
+        //-       figure.collection__gallery__media
+        //-         img.collections__gallery__media__image(
+        //-           alt=product.products_product.data.image.alt || ''
+        //-           src=product.products_product.data.image.url || ''
+        //-         )
+    .collection__content 
+      each collection in collections 
+        article.collections__article
+          h2.collections__article__title=collection.data.title[0].text
+          p.collections__article__description=collection.data.description

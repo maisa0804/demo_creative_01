@@ -1,4 +1,31 @@
 extends ../base.pug
 
+block vars
+  - var template = 'detail'
+
 block content
-  h1.detail__title Detail
+  .detail
+    .detail__wrapper
+      figure.detail__media
+        img.detail__media__image(
+          alt=product.data.image.alt || ''
+          src=product.data.image.url || ''
+        )
+    .detail__information
+      p.detail__information__collection=product.data.title
+      h1.detail__information__title=product.data.title
+
+      .detail__information__content
+        .detail__information__highlights
+          each highlight in product.data.highlights
+            p.details__i¨nformation__highlight
+              svg.details__information__icon
+                use(xlink:href=highlight.highlihts_icon)
+                span.details__information__highlight__text=highlight.highlights_text
+
+        .detail__information__list
+          each item in product.data.informations
+            p.detail__information__item
+              strong.detail__information__item__title=item.informations_label
+              span.detail__information__item__description=item.information_description
+        a.detail__information__link(href=product.data.link_url.url target='')=product.data.link_text
